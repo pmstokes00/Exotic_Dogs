@@ -1,0 +1,107 @@
+/* Default styles for all devices */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+
+.image-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.img {
+    width: 90%;
+	height: 60%;
+    max-width: 100%; /* Set the maximum width of the image */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 1rem;
+}
+
+.description {
+    color: white;
+    width: 90%; /* Set width same as image */
+    height: 60%; /* Let the height adjust based on content */
+    max-width: 600px; /* Ensure maximum width */
+    padding: 0.5rem;
+    background-color: #007bff;
+    box-sizing: border-box;
+    line-height: 1.5;
+    text-align: center;
+    overflow: auto; /* Add overflow property */
+}
+
+.choice-button-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1rem;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.choice-button {
+    margin: 0;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.8rem;
+    background-color: teal;
+    color: yellow;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    word-wrap: break-word;
+    text-align: center;
+    flex: 1;
+    min-width: 150px;
+}
+
+#play-sound-button {
+	margin: 1.0rem; /* Add margin between buttons */
+    padding: 1.0rem 1.5rem; /* Reduce padding */
+    position: absolute;
+	font-size: 1.0rem; /* Reduce font size */
+	background-color: yellow; /* Set background color to teal */
+    top: 30%;
+    left: 50%;
+	font-size: 1.0rem; /* Reduce font size */
+    transform: translate(-50%, -50%);
+    /* Additional styles */
+}
+
+#result {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: black;
+    background-color: yellow;
+    padding: 1rem;
+    z-index: 1;
+    display: none;
+}
+
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    text-align: center;
+    background-color: darkblue;
+    color: white;
+    padding: 1rem;
+    z-index: 1;
+    display: none;
+}
