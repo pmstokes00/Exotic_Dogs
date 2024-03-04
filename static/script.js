@@ -39,12 +39,9 @@ const descriptions = {
     "Chug.jpeg": {
         showName: "Chug",
         description: "The Chug is a mix between a Chihuahua and a Pug, resulting in a tiny package with a big personality. They may be small, but they've got enough attitude to fill a room."
-    },
-    "Labradoodle.jpeg": {
-        showName: "Labradoodle",
-        description: "The Labradoodle is a cross between a Labrador Retriever and a Poodle, combining the intelligence of both breeds with the low-shedding coat of the Poodle. They're the perfect blend of brains and beauty."
-    }
+	}
 };
+
 
 // Initialize the game with descriptions
 initializeGame(descriptions);
@@ -67,6 +64,7 @@ initializeGame(descriptions);
 		let totalAttempts = 0; // Add variable to track total attempts
 		let incorrectAttempts = 0;
 		let soundPlayed = false; // Flag to track whether sound has been played
+		let totalImagesCount = 0;
 
 		// Update total count of images
 		document.getElementById('total-count').textContent = images.length;
@@ -82,38 +80,39 @@ initializeGame(descriptions);
 		}
 
     // Function to generate multiple choices
-    function generateChoices(correctShowName) {
-        const choicesContainer = document.getElementById('choices');
-        choicesContainer.innerHTML = ''; // Clear previous choices
-        const allShowNames = images.map(image => image.show_name);
-        const shuffledShowNames = shuffleArray(allShowNames);
-        const correctIndex = shuffledShowNames.indexOf(correctShowName);
-        shuffledShowNames.splice(correctIndex, 1); // Remove correct answer from the array
-        shuffledShowNames.sort(() => Math.random() - 0.5); // Shuffle remaining options
-        shuffledShowNames.splice(Math.floor(Math.random() * 4), 0, correctShowName); // Insert correct answer at a random position
-        shuffledShowNames.forEach((showName, index) => {
-            if (index < 4) {
-                const choiceButton = document.createElement('button');
-                choiceButton.textContent = showName;
-                choiceButton.classList.add('choice-button');
+	function generateChoices(correctShowName) {
+		const choicesContainer = document.getElementById('choices');
+		choicesContainer.innerHTML = ''; // Clear previous choices
+		const allShowNames = images.map(image => image.show_name);
+		const shuffledShowNames = shuffleArray(allShowNames);
+		const correctIndex = shuffledShowNames.indexOf(correctShowName);
+		shuffledShowNames.splice(correctIndex, 1); // Remove correct answer from the array
+		shuffledShowNames.sort(() => Math.random() - 0.5); // Shuffle remaining options
+		shuffledShowNames.splice(Math.floor(Math.random() * 4), 0, correctShowName); // Insert correct answer at a random position
+		shuffledShowNames.forEach((showName, index) => {
+			if (index < 4) {
+				const choiceButton = document.createElement('button');
+				choiceButton.textContent = showName;
+				choiceButton.classList.add('choice-button');
 				choiceButton.addEventListener('click', () => {
 					totalAttempts++; // Increment total attempts on each choice
 					document.getElementById('attempt-count').textContent = totalAttempts; // Update attempts display
-                    if (showName === correctShowName) {
-                        choiceButton.style.color = 'white'; // Change text color to white for the correct answer
-                        document.getElementById('result').textContent = 'Correct!';
-                        document.getElementById('result').style.display = 'block'; // Show result message
-                        score++; // Increase score
-                        document.getElementById('score-value').textContent = score; // Update score display
-                        setTimeout(() => {
-                            document.getElementById('result').style.display = 'none'; // Hide result message after 2 seconds
-                        }, 2000); // Hide message after 2 seconds
-                        nextImage(); // Move to next image
-                    } else {
-						// Code for incorrect choice
+					if (showName === correctShowName) {
+						choiceButton.style.color = 'white'; // Change text color to white for the correct answer
+						document.getElementById('result').textContent = 'Correct!';
+						document.getElementById('result').style.display = 'block'; // Show result message
+						score++; // Increase score
+						document.getElementById('score-value').textContent = score; // Update score display
+						setTimeout(() => {
+							document.getElementById('result').style.display = 'none'; // Hide result message after 2 seconds
+						}, 2000); // Hide message after 2 seconds
+						nextImage(); // Move to next image
+					} else {
 						document.getElementById('result').textContent = 'Incorrect. Try again';
 						document.getElementById('result').style.display = 'block'; // Show result message
-						incorrectAttempts++; // Increment incorrect attempts
+						incorrectAttempts++;
+						totalAttempts++; // Increment total attempts
+						document.getElementById('attempt-count').textContent = totalAttempts; // Update total attempts display
 						setTimeout(() => {
 							document.getElementById('result').style.display = 'none'; // Hide result message after 2 seconds
 						}, 2000); // Hide message after 2 seconds
@@ -122,11 +121,12 @@ initializeGame(descriptions);
 							incorrectAttempts = 0; // Reset incorrect attempts counter
 						}
 					}
-                });
-                choicesContainer.appendChild(choiceButton);
-            }
-        });
-    }
+				});
+				choicesContainer.appendChild(choiceButton);
+			}
+		});
+	}
+
 
     // Function to shuffle an array (Fisher-Yates algorithm)
     function shuffleArray(array) {
@@ -184,20 +184,26 @@ initializeGame(descriptions);
         document.getElementById('game-over').style.display = 'none'; // Hide game over message
     }
 
-    // Event listener for the play sound button
-    document.getElementById('play-sound-button').addEventListener('click', function() {
-        // Logic to play the sound when the button is clicked
-        const audio = new Audio('static/default_sound.mp3');
-        audio.play();
-        // Set the flag to true indicating the sound has been played
-        soundPlayed = true;
-        // Hide the play sound button after playing sound
-        document.getElementById('play-sound-button').style.display = 'none';
-        // Enable the choice buttons after sound is played
-        enableChoiceButtons();
-        // Display the first image after the sound is played
-        displayImage(currentIndex);
-    });
+	// Event listener for the play sound button
+	document.getElementById('play-sound-button').addEventListener('click', function() {
+		// Logic to play the sound when the button is clicked
+		const audio = new Audio('static/default_sound.mp3');
+		audio.play();
+		// Set the flag to true indicating the sound has been played
+		soundPlayed = true;
+		// Hide the play sound button after playing sound
+		document.getElementById('play-sound-button').style.display = 'none';
+		// Enable the choice buttons after sound is played
+		enableChoiceButtons();
+		// Display the first image after the sound is played
+		displayImage(currentIndex);
+		// Update the total images count
+		totalImagesCount = images.length;
+		// Set the total images count as a CSS custom property
+		document.documentElement.style.setProperty('--total-images', totalImagesCount);
+		// Update the total images count display
+	document.getElementById('total-count').textContent = totalImagesCount;
+	});
 
     // Function to enable choice buttons
     function enableChoiceButtons() {

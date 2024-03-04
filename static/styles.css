@@ -96,6 +96,11 @@ body {
     border-radius: 5px; /* Add border radius for rounded corners */
 }
 
+/* Update the total count of images by subtracting 1 */
+#total-count::before {
+    content: calc(var(--total-images) - 1); /* Subtract 1 from the total image count */
+}
+
 #score,
 #attempts,
 #total-images {
@@ -104,6 +109,7 @@ body {
     color: white; /* Adjust color as needed */
 	margin-right: 20px; /* Add right margin to create space */
 }
+
 
 #score {
     margin-left: 20px; /* Add right margin to create space */
