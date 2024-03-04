@@ -49,29 +49,37 @@ const descriptions = {
 // Initialize the game with descriptions
 initializeGame(descriptions);
 
+// Initialize the game with descriptions
+initializeGame(descriptions);
+
 // Function to initialize the game with descriptions
-function initializeGame(descriptions) {
-    // Define image data
-    const images = Object.keys(descriptions).map(imagePath => ({
-        image_path: `static/Images/${imagePath}`,
-        show_name: descriptions[imagePath].showName,
-        description: descriptions[imagePath].description
-    }));
+	function initializeGame(descriptions) {
+		// Define image data
+		const images = Object.keys(descriptions).map(imagePath => ({
+			image_path: `static/Images/${imagePath}`,
+			show_name: descriptions[imagePath].showName,
+			description: descriptions[imagePath].description
+		}));
 
-    // Initialize index to track current image and incorrect attempts counter
-    let currentIndex = 0;
-    let incorrectAttempts = 0;
-    let score = 0;
+		// Initialize index to track current image, score, and total attempts counter
+		let currentIndex = 0;
+		let score = 0;
+		let totalAttempts = 0; // Add variable to track total attempts
+		let incorrectAttempts = 0;
+		let soundPlayed = false; // Flag to track whether sound has been played
 
-    // Function to display current image, description, and choices
-    function displayImage(index) {
-        const image = images[index];
-        const currentImage = document.getElementById('current-image');
-        currentImage.src = image.image_path;
-        currentImage.alt = image.show_name;
-        document.getElementById('description').textContent = image.description;
-        generateChoices(image.show_name);
-    }
+		// Update total count of images
+		document.getElementById('total-count').textContent = images.length;
+
+		// Function to display current image, description, and choices
+		function displayImage(index) {
+			const image = images[index];
+			const currentImage = document.getElementById('current-image');
+			currentImage.src = image.image_path;
+			currentImage.alt = image.show_name;
+			document.getElementById('description').textContent = image.description;
+			generateChoices(image.show_name);
+		}
 
     // Function to generate multiple choices
     function generateChoices(correctShowName) {
@@ -88,7 +96,9 @@ function initializeGame(descriptions) {
                 const choiceButton = document.createElement('button');
                 choiceButton.textContent = showName;
                 choiceButton.classList.add('choice-button');
-                choiceButton.addEventListener('click', () => {
+				choiceButton.addEventListener('click', () => {
+					totalAttempts++; // Increment total attempts on each choice
+					document.getElementById('attempt-count').textContent = totalAttempts; // Update attempts display
                     if (showName === correctShowName) {
                         choiceButton.style.color = 'white'; // Change text color to white for the correct answer
                         document.getElementById('result').textContent = 'Correct!';
@@ -100,17 +110,18 @@ function initializeGame(descriptions) {
                         }, 2000); // Hide message after 2 seconds
                         nextImage(); // Move to next image
                     } else {
-                        document.getElementById('result').textContent = 'Incorrect. Try again';
-                        document.getElementById('result').style.display = 'block'; // Show result message
-                        setTimeout(() => {
-                            document.getElementById('result').style.display = 'none'; // Hide result message after 2 seconds
-                        }, 2000); // Hide message after 2 seconds
-                        incorrectAttempts++; // Increment incorrect attempts
-                        if (incorrectAttempts === 3) {
-                            nextImage(); // Move to next image after 3 incorrect attempts
-                            incorrectAttempts = 0; // Reset incorrect attempts counter
-                        }
-                    }
+						// Code for incorrect choice
+						document.getElementById('result').textContent = 'Incorrect. Try again';
+						document.getElementById('result').style.display = 'block'; // Show result message
+						incorrectAttempts++; // Increment incorrect attempts
+						setTimeout(() => {
+							document.getElementById('result').style.display = 'none'; // Hide result message after 2 seconds
+						}, 2000); // Hide message after 2 seconds
+						if (incorrectAttempts === 3) {
+							nextImage(); // Move to next image after 3 incorrect attempts
+							incorrectAttempts = 0; // Reset incorrect attempts counter
+						}
+					}
                 });
                 choicesContainer.appendChild(choiceButton);
             }
@@ -142,27 +153,64 @@ function initializeGame(descriptions) {
     function restartGame() {
         currentIndex = 0; // Reset index
         incorrectAttempts = 0; // Reset incorrect attempts counter
+        totalIncorrectAttempts = 0; // Reset total incorrect attempts counter
+        score = 0; // Reset score
+        document.getElementById('score-value').textContent = score; // Reset score display
+        document.getElementById('attempt-count').textContent = totalIncorrectAttempts; // Reset total incorrect attempts display
+        displayImage(currentIndex); // Display first image
+        document.getElementById('game-over').style.display = 'none'; // Hide game over message
+    }
+
+    // Function to move to the next image
+    function nextImage() {
+        currentIndex++;
+        if (currentIndex >= images.length) {
+            document.getElementById('game-over').innerHTML = 'Game Over<br>Restart?<br>Click here.';
+            document.getElementById('game-over').style.display = 'block'; // Show game over message
+            document.getElementById('game-over').addEventListener('click', restartGame);
+        } else {
+            displayImage(currentIndex);
+        }
+    }
+
+    // Function to restart the game
+    function restartGame() {
+        currentIndex = 0; // Reset index
+        incorrectAttempts = 0; // Reset incorrect attempts counter
+		incorrect =0;
         score = 0; // Reset score
         document.getElementById('score-value').textContent = score; // Reset score display
         displayImage(currentIndex); // Display first image
         document.getElementById('game-over').style.display = 'none'; // Hide game over message
     }
 
-	// Event listener for the play sound button
-	document.getElementById('play-sound-button').addEventListener('click', function() {
-		// Logic to play the sound when the button is clicked
-		const audio = new Audio('static/default_sound.mp3');
-		audio.play();
-		// Hide the play sound button after playing sound
-		document.getElementById('play-sound-button').style.display = 'none';
-		// Display the first image after the sound is played
-		displayImage(currentIndex);
-	});
+    // Event listener for the play sound button
+    document.getElementById('play-sound-button').addEventListener('click', function() {
+        // Logic to play the sound when the button is clicked
+        const audio = new Audio('static/default_sound.mp3');
+        audio.play();
+        // Set the flag to true indicating the sound has been played
+        soundPlayed = true;
+        // Hide the play sound button after playing sound
+        document.getElementById('play-sound-button').style.display = 'none';
+        // Enable the choice buttons after sound is played
+        enableChoiceButtons();
+        // Display the first image after the sound is played
+        displayImage(currentIndex);
+    });
+
+    // Function to enable choice buttons
+    function enableChoiceButtons() {
+        const choiceButtons = document.querySelectorAll('.choice-button');
+        choiceButtons.forEach(button => {
+            button.disabled = false; // Enable each choice button
+        });
+    }
 
     // Initial display
     // Since we're removing the sound button, we need to call displayImage directly
     displayImage(currentIndex);
-
+	
     // Optional: Add event listeners for keyboard navigation
     document.addEventListener('keydown', function(event) {
         if (event.key === 'ArrowLeft') {
